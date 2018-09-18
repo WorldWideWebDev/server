@@ -368,8 +368,13 @@ class Setup {
 			if (!$user) {
 				$error[] = "User <$username> could not be created.";
 			}
-			if ($user instanceof IUser && empty($options['adminemail']) === false) {
-				$user->setEMailAddress(htmlspecialchars_decode($options['adminemail']));
+			if ($user instanceof IUser && !empty($options['adminemail'])) {
+				$adminEmail = htmlspecialchars_decode($options['adminemail']);
+				if (filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
+					$user->setEMailAddress(htmlspecialchars_decode($options['adminemail']));
+				} else {
+					$error[] = "Ignored e-mail-address <$adminEmail> for <$username> because invalid.";
+				}
 			}
 		} catch(Exception $exception) {
 			$error[] = $exception->getMessage();
